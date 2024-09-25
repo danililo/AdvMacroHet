@@ -24,11 +24,11 @@ class HANCModelClass(EconModelClass,GEModelClass):
 
         # b. household
         self.grids_hh = ['a'] # grids
-        self.pols_hh = ['a'] # policy functions
-        self.inputs_hh = ['r','w'] # direct inputs
+        self.pols_hh = ['a'] # policy functions 
+        self.inputs_hh = ['r','w'] # direct inputs (aggregate variables)
         self.inputs_hh_z = [] # transition matrix inputs (not used today)
-        self.outputs_hh = ['a','c','l'] # outputs
-        self.intertemps_hh = ['vbeg_a'] # intertemporal variables
+        self.outputs_hh = ['a','c','l'] # outputs. GEModels will automatically calculate aggregates A_hh, C_hh and L_hh from these.
+        self.intertemps_hh = ['vbeg_a'] # intertemporal variables (variables passed on to the next period)
 
         # c. GE
         self.shocks = [] # exogenous shocks (not used today)
@@ -69,7 +69,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.a_max = 500.0 # maximum point in grid for a
         par.Na = 300 # number of grid points
 
-        # g. indirect approach: targets for stationary equilibrium
+        # g. indirect approach: targets for stationary equilibrium (only used for indirect approach, not direct)
         par.r_ss_target = 0.01
         par.w_ss_target = 1.0
 

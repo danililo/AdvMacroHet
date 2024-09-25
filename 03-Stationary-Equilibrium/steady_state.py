@@ -17,14 +17,17 @@ def prepare_hh_ss(model):
     # 1. grids #
     ############
     
-    # a. beta
-    par.beta_grid[:] = np.linspace(par.beta_mean-par.beta_delta,par.beta_mean+par.beta_delta,par.Nbeta)
+    # a. beta 
+    par.beta_grid[:] = np.linspace(
+        par.beta_mean - par.beta_delta,
+        par.beta_mean + par.beta_delta,
+        par.Nbeta)
 
     # b. a
-    par.a_grid[:] = equilogspace(0.0,ss.w*par.a_max,par.Na)
+    par.a_grid[:] = equilogspace(0.0, ss.w * par.a_max, par.Na)
     
-    # c. z
-    par.z_grid[:],z_trans,z_ergodic,_,_ = log_rouwenhorst(par.rho_z,par.sigma_psi,par.Nz)
+    # c. z: Rouwenhorst Markov chain approximation of AR(1) process for productivity sequence {z_t}
+    par.z_grid[:], z_trans, z_ergodic, _,_ = log_rouwenhorst(par.rho_z, par.sigma_psi, par.Nz) 
 
     #############################################
     # 2. transition matrix initial distribution #
@@ -44,9 +47,9 @@ def prepare_hh_ss(model):
     # note: the guess here is somewhat arbitrary
     
     # a. raw value
-    y = ss.w*par.z_grid
-    c = m = (1+ss.r)*par.a_grid[np.newaxis,:] + y[:,np.newaxis]
-    v_a = (1+ss.r)*c**(-par.sigma)
+    y = ss.w * par.z_grid
+    c = m = (1+ss.r) * par.a_grid[np.newaxis,:] + y[:,np.newaxis]
+    v_a = (1+ss.r) * c**(-par.sigma)
 
     # b. expectation
     ss.vbeg_a[:] = ss.z_trans@v_a
@@ -75,8 +78,8 @@ def obj_ss(K_ss,model,do_print=False):
         print(f'implied {ss.r = :.4f}')
         print(f'implied {ss.w = :.4f}')
 
-    model.solve_hh_ss(do_print=do_print)
-    model.simulate_hh_ss(do_print=do_print)
+    model.solve_hh_ss(do_print=do_print) #backwards?
+    model.simulate_hh_ss(do_print=do_print) #forward?
 
     # ss.A_hh = np.sum(ss.a*ss.D) # calculated in model.solve_hh_ss
     # ss.C_hh = np.sum(ss.c*ss.D) # calculated in model.solve_hh_ss

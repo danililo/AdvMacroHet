@@ -71,7 +71,7 @@ def obj_ss(x,model,do_print,calibrate):
     ss.rK = par.alpha*ss.Gamma*(ss.K/ss.L)**(par.alpha-1.0)
     ss.r = ss.rK - par.delta
     ss.w = (1.0-par.alpha)*ss.Gamma*(ss.K/ss.L)**par.alpha
-
+    
 
     # c. household behavior
     prepare_hh_ss(model)
@@ -91,13 +91,12 @@ def obj_ss(x,model,do_print,calibrate):
     L_HH_res = ss.L_hh - 1.0
 
     if calibrate: # if calibrating, return calibration targets
-        ## CODE HERE ##
-        ...
+
+        return KY_res, L_HH_res
         
-    else: # if solving, return modle residuals 
+    else: # if solving, return model residuals 
         
-        ## CODE HERE ##
-        ...
+        return ss.clearing_A, ss.clearing_L, ss.clearing_Y, ss.clearing_G
     
 
 def find_ss(model,do_print=False,calibrate=False, x0=None):
