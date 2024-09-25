@@ -92,11 +92,11 @@ def obj_ss(x,model,do_print,calibrate):
 
     if calibrate: # if calibrating, return calibration targets
 
-        return KY_res, L_HH_res
+        return KY_res, L_HH_res ## CODE HERE ##
         
     else: # if solving, return model residuals 
         
-        return ss.clearing_A, ss.clearing_L, ss.clearing_Y, ss.clearing_G
+        return ss.clearing_A, ss.clearing_L, ss.clearing_Y, ss.clearing_G ## CODE HERE ##
     
 
 def find_ss(model,do_print=False,calibrate=False, x0=None):
