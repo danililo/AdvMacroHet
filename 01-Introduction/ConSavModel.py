@@ -281,6 +281,7 @@ def value_of_choice(c,par,i_z,m,vbeg_plus):
 @nb.njit(parallel=True)        
 def solve_hh_backwards_vfi(par,vbeg_plus,c_plus,vbeg,c,a):
     """ solve backwards with v_plus from previous iteration """
+    # At this point, we know the realized z_t. Now we are choosing optimal consumption.
 
     v = np.zeros(vbeg_plus.shape)
 

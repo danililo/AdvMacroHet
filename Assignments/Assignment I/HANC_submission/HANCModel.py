@@ -21,12 +21,12 @@ class HANCModelClass(EconModelClass,GEModelClass):
         self.inputs_hh = ['r','w', 'tau_l','tau_a', 'transfer'] # direct inputs
         self.inputs_hh_z = [] # transition matrix inputs
         self.outputs_hh = ['a','c','ell', 'l', 'taxes'] # outputs
-        self.intertemps_hh = ['vbeg_a'] # intertemporal variables
+        self.intertemps_hh = ['vbeg_a', 'v'] # intertemporal variables
 
         # c. GE
-        self.shocks = [] # exogenous shocks
-        self.unknowns = [] # endogenous unknowns
-        self.targets = [] # targets = 0
+        self.shocks = ['tau_a', 'tau_l'] # exogenous shocks
+        self.unknowns = ['Gamma', 'K', 'L'] # endogenous unknowns
+        self.targets = ['clearing_A', 'clearing_L', 'clearing_Y'] # targets = 0
         self.blocks = [ # list of strings to block-functions
             'blocks.production_firm',
             'blocks.mutual_fund',
@@ -77,7 +77,7 @@ class HANCModelClass(EconModelClass,GEModelClass):
         par.tau_a_ss = 0.1 # tax on capital income 
 
         # i. misc.
-        par.T = 1000 # length of transition path        
+        par.T = 200 # length of transition path        
         par.simT = 2_000 # length of simulation 
         
         par.max_iter_solve = 80_000 # maximum number of iterations when solving household problem

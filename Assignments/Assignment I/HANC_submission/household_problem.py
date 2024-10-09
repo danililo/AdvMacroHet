@@ -8,8 +8,9 @@ def u(c,ell, sigma, frisch, vphi):
 
 
 @nb.njit(parallel=True)        
-def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,l,ell,
-                       tau_l,tau_a,taxes,transfer,ss=False):
+def solve_hh_backwards(par, z_trans, r, w, vbeg_a_plus, vbeg_a, a, c, l, ell,
+                       v, v_plus,
+                       tau_l, tau_a, taxes, transfer, ss=False):
     """ solve backwards with vbeg_a from previous iteration (here vbeg_a_plus) """
 
     # par,z_trans: always inputs
@@ -18,6 +19,7 @@ def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,l,ell,
     # a,c,l: outputs because they are in .outputs_hh
 
     # ss = True is to get guess of vbeg_a
+    v_plus_vec = np.zeros_like(v_plus)
 
     for i_fix in nb.prange(par.Nfix): # fixed types
 
@@ -43,25 +45,36 @@ def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,l,ell,
                 # interpolation to fixed grid
                 interp_1d_vec(m_endo,par.a_grid,m,a[i_fix,i_z])
                 interp_1d_vec(m_endo,ell_nextgrid,m,ell[i_fix,i_z])
+                interp_1d_vec(m_endo,v_plus[i_fix, i_z],m,v_plus_vec[i_fix,i_z]) # interpolate v_plus
             
                 # if constrained we have to solve labor supply decision again 
                 a_min = par.a_grid[0]
-                for i_a in range(par.Na):
+                for i_a in range(par.Na):   
                     if a[i_fix,i_z,i_a] < a_min: # constrained 
                         a[i_fix,i_z,i_a] = a_min
                         other_income = (1+(1-tau_a)*r)*par.a_grid[i_a] + transfer
                         ell[i_fix,i_z,i_a] = solve_cl(we, other_income, a_min, par.vphi, par.sigma, par.frisch)
 
             # cash-on-hand 
-            m = (1+(1-tau_a)*r)*par.a_grid + we*l[i_fix,i_z,:] + transfer
+            m = (1+(1-tau_a)*r)*par.a_grid + we*ell[i_fix,i_z,:] + transfer
 
             c[i_fix,i_z] = m - a[i_fix,i_z]
-            l[i_fix,i_z] = l[i_fix,i_z]*par.z_grid[i_z]
+            l[i_fix,i_z] = ell[i_fix,i_z]*par.z_grid[i_z]
             taxes[i_fix,i_z] = tau_a*r*par.a_grid + l[i_fix,i_z]*w*tau_l
 
         # b. expectation step 
         v_a = (1+(1-tau_a)*r)*c[i_fix]**(-par.sigma)
         vbeg_a[i_fix] = z_trans[i_fix]@v_a
+
+        
+        # # c. value function (eq. 9)
+        Ev = z_trans[i_fix] @ v_plus_vec[i_fix]
+        v[i_fix] = u(c[i_fix], ell[i_fix], par.sigma, par.frisch, par.vphi) + par.beta * Ev
+
+        # interp_1d_vec 1:  På hvilket grid kender jeg den funktion jeg gerne vil interpolere
+        # 2: Hvad vil jeg gerne interpolere
+        # 3: Hvad vil jeg gerne interpolere til
+        # 4. Output
         
 
 @nb.njit 

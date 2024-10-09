@@ -39,6 +39,7 @@ def prepare_hh_ss(model):
     ################################################
 
     ss.vbeg_a[:] = (0.05 + par.a_grid*0.1)**(-par.sigma)
+    ss.v[:] = 0. # initial value of value function for backwards iteration
     model.set_hh_initial_guess() # calls .solve_hh_backwards() with ss=True
     
     
@@ -50,15 +51,21 @@ def obj_ss(x,model,do_print,calibrate):
 
     if calibrate: # If we calibrate the model guess on the following variables
         ## CODE HERE ##
-        ...
+        par.beta = x[0]
+        ss.transfer = x[1]
+        ss.K = x[2]
+        par.vphi = x[3]
+
+        ss.L = 1.
 
         # in calibration, set tau_l to calibrated value 
         ss.tau_l = par.tau_l_ss
 
     else: # If we solve the model guess on the following variables
         ## CODE HERE ##
-        ...
-
+        ss.transfer = x[0]
+        ss.K = x[1]
+        ss.L = x[2]
 
     # update tau_a value 
     ss.tau_a = par.tau_a_ss
@@ -71,7 +78,6 @@ def obj_ss(x,model,do_print,calibrate):
     ss.rK = par.alpha*ss.Gamma*(ss.K/ss.L)**(par.alpha-1.0)
     ss.r = ss.rK - par.delta
     ss.w = (1.0-par.alpha)*ss.Gamma*(ss.K/ss.L)**par.alpha
-    
 
     # c. household behavior
     prepare_hh_ss(model)
@@ -92,11 +98,11 @@ def obj_ss(x,model,do_print,calibrate):
 
     if calibrate: # if calibrating, return calibration targets
 
-        return KY_res, L_HH_res ## CODE HERE ##
+        return np.array([ss.clearing_A, ss.clearing_G, KY_res, L_HH_res]) ## CODE HERE ##
         
     else: # if solving, return model residuals 
         
-        return ss.clearing_A, ss.clearing_L, ss.clearing_Y, ss.clearing_G ## CODE HERE ##
+        return np.array([ss.clearing_A, ss.clearing_L, ss.clearing_G])  ## CODE HERE ##
     
 
 def find_ss(model,do_print=False,calibrate=False, x0=None):
@@ -114,9 +120,13 @@ def find_ss_direct(model,do_print=False,calibrate=False, x0=None):
     # Initial guess for root finder  
     if x0 is None:
         if calibrate:
-            x0 = ...
+            beta = 0.95
+            transfer = 0.1
+            K = 6.
+            phi = .5
+            x0 = np.array([beta, transfer, K, phi])
         else:
-            x0 = ...
+            pass
 
     sol = optimize.root(obj_ss, x0, method='hybr', args=(model,False,calibrate))
 
