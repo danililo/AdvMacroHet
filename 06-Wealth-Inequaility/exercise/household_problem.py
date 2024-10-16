@@ -15,16 +15,20 @@ def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,
 
     # ss = True is to get guess of vbeg_a
 
-   
+    Ne = par.Ne
 
     for i_fix in nb.prange(par.Nfix): # fixed types
 
         # a. solve step
         for i_z in nb.prange(par.Nz): # stochastic discrete states
 
+            # Get r and e states 
+            i_r = i_z // Ne  # State index in Markov chain r
+            i_e = i_z % Ne   # State index in Markov chain e
+
             ## i. cash-on-hand
-            m = (1+r)*par.a_grid + w*par.e_grid[i_z]
-            returns[i_fix,i_z,:] = r*par.a_grid
+            m = (1+r+par.r_grid[i_r])*par.a_grid + w*par.e_grid[i_e]
+            returns[i_fix,i_z,:] = (r + par.r_grid[i_r])*par.a_grid
 
             if ss:
 
@@ -43,6 +47,6 @@ def solve_hh_backwards(par,z_trans,r,w,vbeg_a_plus,vbeg_a,a,c,
             c[i_fix,i_z] = m - a[i_fix,i_z]
 
         # b. expectation step
-        v_a = (1+r)*c[i_fix]**(-par.sigma)
+        v_a = (1+r+par.r_grid[i_r])*c[i_fix]**(-par.sigma)
         vbeg_a[i_fix] = z_trans[i_fix]@v_a
         

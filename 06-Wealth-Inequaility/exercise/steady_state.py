@@ -30,14 +30,14 @@ def prepare_hh_ss(model):
     par.r_grid[:],r_trans,r_ergodic,_,_ = rouwenhorst(par.rX_mean*(1-par.rho_r), par.rho_r,par.sigma_r,par.Nr)
 
 
-    z_ergodic = e_ergodic
+    z_ergodic = np.kron(r_ergodic, e_ergodic)
 
     #############################################
     # 2. transition matrix initial distribution #
     #############################################
 
     for i_fix in range(par.Nfix):
-        ss.z_trans[i_fix,:,:] = e_trans
+        ss.z_trans[i_fix,:,:] = np.kron(r_trans,e_trans)
         ss.Dbeg[i_fix,:,0] = z_ergodic/par.Nfix # ergodic at a_lag = 0.0
         ss.Dbeg[i_fix,:,1:] = 0.0 # none with a_lag > 0.0
 
