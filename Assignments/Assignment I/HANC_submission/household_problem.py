@@ -45,7 +45,6 @@ def solve_hh_backwards(par, z_trans, r, w, vbeg_a_plus, vbeg_a, a, c, l, ell,
                 # interpolation to fixed grid
                 interp_1d_vec(m_endo,par.a_grid,m,a[i_fix,i_z])
                 interp_1d_vec(m_endo,ell_nextgrid,m,ell[i_fix,i_z])
-                interp_1d_vec(m_endo,v_plus[i_fix, i_z],m,v_plus_vec[i_fix,i_z]) # interpolate v_plus
             
                 # if constrained we have to solve labor supply decision again 
                 a_min = par.a_grid[0]
@@ -67,9 +66,26 @@ def solve_hh_backwards(par, z_trans, r, w, vbeg_a_plus, vbeg_a, a, c, l, ell,
         vbeg_a[i_fix] = z_trans[i_fix]@v_a
 
         
-        # # c. value function (eq. 9)
-        Ev = z_trans[i_fix] @ v_plus_vec[i_fix]
-        v[i_fix] = u(c[i_fix], ell[i_fix], par.sigma, par.frisch, par.vphi) + par.beta * Ev
+        for i_z in nb.prange(par.Nz): # stochastic discrete states
+
+            # STEP 1. Get flow utility from optimal choices of c,l
+            u_ = u(c[i_fix,i_z],ell[i_fix,i_z],par.sigma, par.frisch, par.vphi)  
+            
+            # STEP 2. Expectation of future value v_plus over z 
+            Ev_plus = np.zeros_like(v)
+            for i_z_p in range(par.Nz):
+                Ev_plus[i_fix,i_z] += z_trans[i_fix,i_z,i_z_p]*v_plus[i_fix,i_z_p]
+
+            # Note: same as Ev_plus[i_fix] = z_trans[i_fix] @ v_plus[i_fix]
+                        
+            # STEP 3. Interpolation - use ONE of the options below 
+            Ev_plus_int = np.zeros_like(par.a_grid)
+            
+            # option 2 - use interp_1d_vec which interpolates entire vector at once 
+            interp_1d_vec(par.a_grid,Ev_plus[i_fix,i_z],a[i_fix,i_z],Ev_plus_int)
+
+            # STEP 4. Calculate lifetime utility 
+            v[i_fix,i_z] = u_ + par.beta*Ev_plus_int
 
         # interp_1d_vec 1:  På hvilket grid kender jeg den funktion jeg gerne vil interpolere
         # 2: Hvad vil jeg gerne interpolere

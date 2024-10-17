@@ -24,8 +24,8 @@ class HANCModelClass(EconModelClass,GEModelClass):
         self.intertemps_hh = ['vbeg_a', 'v'] # intertemporal variables
 
         # c. GE
-        self.shocks = ['tau_a', 'tau_l'] # exogenous shocks
-        self.unknowns = ['Gamma', 'K', 'L'] # endogenous unknowns
+        self.shocks = ['tau_a'] # exogenous shocks
+        self.unknowns = ['K', 'L', 'tau_l'] # endogenous unknowns
         self.targets = ['clearing_A', 'clearing_L', 'clearing_Y'] # targets = 0
         self.blocks = [ # list of strings to block-functions
             'blocks.production_firm',

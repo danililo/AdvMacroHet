@@ -8,6 +8,7 @@ from GEModelTools import lag, lead
 def production_firm(par,ini,ss,Gamma,K,L,rK,w,Y):
 
     K_lag = lag(ini.K,K)
+    Gamma[:] = ss.Gamma
 
     # a. implied prices (remember K and L are inputs)
     rK[:] = par.alpha*Gamma*(K_lag/L)**(par.alpha-1.0)
