@@ -63,7 +63,7 @@ def obj_ss(x,model,do_print,calibrate):
 
     else: # If we solve the model guess on the following variables
         ## CODE HERE ##
-        ss.transfer = x[0]
+        ss.tau_l = x[0]
         ss.K = x[1]
         ss.L = x[2]
 
