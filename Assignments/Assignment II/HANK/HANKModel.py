@@ -114,7 +114,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.std_epsT = 0.00 # std.
 
         # h. misc.
-        par.T = 500 # length of path        
+        par.T = 200 # length of path        
         
         par.max_iter_solve = 50_000 # maximum number of iterations when solving
         par.max_iter_simulate = 50_000 # maximum number of iterations when simulating

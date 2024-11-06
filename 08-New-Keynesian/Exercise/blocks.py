@@ -11,7 +11,8 @@ def NK_block(par,ini,ss,i,pi,P,C,Y,Euler,r,Z,N,w,mc,goods_mkt,NKPC,beta,eps_i,La
     
     # Monetary policy 
     if par.ZLB:
-        ...
+        i[:] = ss.i + par.phi * pi + eps_i 
+        i[i < 0] = 0 # set Zero Lower Bound
     else:
         i[:] = ss.i + par.phi * pi + eps_i 
 
