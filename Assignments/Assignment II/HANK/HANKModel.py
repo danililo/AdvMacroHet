@@ -114,7 +114,7 @@ class HANKModelClass(EconModelClass,GEModelClass):
         par.std_epsT = 0.00 # std.
 
         # h. misc.
-        par.T = 500 # length of path        
+        par.T = 300 # length of path        
         
         par.max_iter_solve = 50_000 # maximum number of iterations when solving
         par.max_iter_simulate = 50_000 # maximum number of iterations when simulating
@@ -153,7 +153,7 @@ class TANKModelClass(HANKModelClass):
         self.inputs_hh = []  # inputs to household problem
         self.intertemps_hh = []  # inputs to household problem
         self.outputs_hh = []  # output of household problem
-        self.solve_hh_backwards = None    
+        self.solve_hh_backwards = None
 
     def set_HH_grids(self):
 

@@ -42,15 +42,41 @@ def government(par,ini,ss,Taxes,B,w,L,r,gov_budget,epsT,LT,profits):
 def TA_HHs(par,ini,ss,w, L, profits, C_hh, A_hh, MUC_hh, r, LT, C_R, C_HtM):
 
     if par.HH_type == 'TANK':
-        ...
-        
+
         # You need to write code here for the following variables:
         # C_R, C_HtM, C_hh, A_hh, MUC_hh
         # Using information specificed in section 4 of the assignment 
         # When you do this remember that the variables are inputs into this function (TA_HHs)
         # and are arrays of length T (so don't write C_R = X, but C_R[:] = X, or C_R[t] = X depending on application)
 
+        # I assume L_hh = L. At least holds in ss.
 
+        # Use ss values for terminal periods and then compute backwards
+
+        for k in range(par.T): # Loop backwards
+            t = par.T - k - 1
+            if t == par.T - 1:
+                C_R[t] = ss.C_R
+            else:
+                C_R[t] = (par.beta*(1+r[t+1]) * C_R[t+1]**(-par.sigma)) ** (-1/par.sigma) # Inverse Euler, Eq 18
+        
+        A_hh[-1] = ss.A_hh # Hack: Use ss value for terminal period as our t-1 value as well
+        for t in range(par.T-1): # Loop forwards 
+                A_hh[t] = (
+                    (1 + r[t]) * A_hh[t-1]
+                    + (1-par.sHtM) * (
+                        (1-par.tau) * (profits[t] + w[t] * L[t])
+                        - LT[t] - C_R[t])
+                )
+
+        # Eq 17 
+        C_HtM[:] = (1-par.tau) * (profits + w * L) - LT
+
+        # Eq 19
+        C_hh[:] = (1-par.sHtM) * C_R + par.sHtM * C_HtM
+
+        # Eq "20" MUC
+        MUC_hh[:] = (1-par.sHtM) * C_R**(-par.sigma) + par.sHtM*C_HtM**(-par.sigma)
 
 @nb.njit
 def labor_supply(par,ini,ss,L,w,MUC_hh,labor_supply_res):
