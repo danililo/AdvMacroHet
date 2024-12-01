@@ -50,7 +50,9 @@
 #figure(image("dsf.png", width:60%), caption:"DSF vs. H for all five models of the assignment.")
 
 = DSF in the HANK model
-I find the transition path for three different model instances with $H in {0, 20, 40}$ and compute the degree of self-finance (DSF) of the shock to government spending. Results are shown below.
+The degree of self-finance (DSF) measures how much a policy finances itself. For example, it is often discussed in Danish policy whether reducing income taxes in the highest income bracket ("topskat") can finance itself, since people might decide to work more when facing a lower marginal tax, thus creating a larger tax base for the government. In the case of this assignment, the DSF measures how much of the costs associated with the spending shock that is financed through extra tax revenues from the resulting economic boom.
+
+I find the transition path for three different model instances with $H in {0, 20, 40}$ and compute the DSF of the shock to government spending. Results are shown below.
 
 #figure(table(columns:2, align: right, stroke:none,
 [$H$], [DSF],
@@ -99,6 +101,8 @@ The fact that the DSF is zero for all $H$ is explained by the behavior of the un
 
 
 On the other hand, the unrestricted households smooth consumption perfectly. They predict that the behavior of the restricted households will cause a short term crash to the economy at time $H$ and increases savings gradually over $t<H$ to perfectly smooth across the crash. This also explains their willingness to purchase all the extra bonds issued by the government in $t<=H$.  Thus their consumption path is completely unaffected by the stimulus.
+
+The behavior observed in the TANK model arises from the fact that while the share of hand-to-mouth households $lambda$ can be chosen to match a realistic contemporary MPC, it cannot simultaneously capture subsequent intertemporal MPCs (iMPCs). This can however be obtained in a TANK model, where most households will spend out of the income from the unexpected shock across several years, generating a fiscal multiplier that is above 1 from the deficit financed shock. 
 
 
 = HANK with low taxes 
